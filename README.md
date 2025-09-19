@@ -2,13 +2,12 @@
 
 ## 🎯 Giới Thiệu
 
-Đây là một công cụ phân tích và mô phỏng tiên tiến các chu kỳ khủng hoảng kinh tế, được phát triển để hiểu sâu về các nguyên nhân, quy luật và mô hình lặp lại của các cuộc khủng hoảng kinh tế trong lịch sử. Công cụ sử dụng Python để tạo ra các biểu đồ trực quan hóa chu kỳ kinh tế dựa trên dữ liệu lịch sử từ NBER (National Bureau of Economic Research) và các nguồn dữ liệu quốc tế.
+Đây là một công cụ phân tích và mô phỏng tiên tiến các chu kỳ khủng hoảng kinh tế, được phát triển để hiểu sâu về các nguyên nhân, quy luật và mô hình lặp lại của các cuộc khủng hoảng kinh tế trong lịch sử. Công cụ sử dụng Python để tạo ra biểu đồ trực quan hóa tổng hợp với phân chia vùng rõ ràng cho từng loại chu kỳ và sự kiện.
 
 ## ✨ Tính Năng Chính
 
 - **📊 Mô phỏng 6 chu kỳ nguyên nhân chính** gây ra khủng hoảng kinh tế
 - **📈 Hiển thị trực quan khoảng thời gian** của suy thoái và khủng hoảng
-- **🎨 Phân biệt màu sắc rõ ràng**: Suy thoái (xanh dương) và Khủng hoảng (đỏ)
 - **📅 Dữ liệu lịch sử đầy đủ** từ 1929 đến hiện tại
 - **🔍 Tạo biểu đồ SVG** có thể phóng to và xem chi tiết
 - **⚙️ Phân tích tổng hợp** các yếu tố tác động đồng thời
@@ -21,10 +20,10 @@
 | Chu Kỳ | Thời Gian (năm) | Trọng Số | Mô Tả |
 |---------|-----------------|----------|-------|
 | 🏦 **Tín dụng** | 14.0 | 1.00 | Chu kỳ cho vay và tín dụng ngân hàng |
-| 🏠 **Bất động sản** | 18.0 | 0.90 | Chu kỳ thị trường nhà đất và bất động sản |
+| 🏠 **Bất động sản** | 18.0 | 0.90 | Chu kỳ thị trường nhà đất |
 | 📈 **Kinh doanh–tồn kho** | 4.0 | 0.55 | Chu kỳ kinh doanh và quản lý tồn kho |
-| 💰 **Lãi suất/thanh khoản** | 6.0 | 0.80 | Chu kỳ chính sách tiền tệ và thanh khoản |
-| 🌍 **Đô la/toàn cầu hóa vốn** | 8.0 | 0.70 | Chu kỳ đồng đô la và dòng vốn toàn cầu |
+| 💰 **Lãi suất/thanh khoản** | 6.0 | 0.80 | Chu kỳ chính sách tiền tệ |
+| 🌍 **Đô la/toàn cầu hóa vốn** | 8.0 | 0.70 | Chu kỳ đồng đô la và dòng vốn |
 
 
 ### Chu Kỳ Phụ (Secondary Cycles)
@@ -60,55 +59,9 @@ pandas>=1.3.0      # Thao tác dữ liệu và chuỗi thời gian
 matplotlib>=3.5.0  # Vẽ biểu đồ và trực quan hóa
 ```
 
-## 📊 Phương Pháp Hiển Thị
+## 📈 Dữ Liệu Đầu Vào
 
-### Biểu Đồ 1: Chu Kỳ Chính + Suy Thoái + Khủng Hoảng
-
-#### 🔴 Khủng hoảng (Crisis)
-- **Vị trí**: Đoạn thẳng nằm ngang tại y = 1.1
-- **Màu sắc**: Đỏ
-- **Độ dày**: 4 pixels
-- **Độ dài tối thiểu**: 1 năm
-- **Nhãn**: Hiển thị ở giữa đoạn thẳng
-
-#### 🔵 Suy thoái (Recession)
-- **Vị trí**: Đoạn thẳng nằm ngang tại y = 1.2
-- **Màu sắc**: Xanh dương
-- **Độ dày**: 4 pixels
-- **Độ dài tối thiểu**: 1 năm
-- **Nhãn**: Hiển thị ở giữa đoạn thẳng
-
-### Biểu Đồ 2: Chu Kỳ Phụ + Sự Kiện Toàn Cầu
-
-#### ⚫ Sự Kiện Chiến Tranh/Thiên Tai
-- **Vị trí**: Đường thẳng đứng
-- **Màu sắc**: Đen
-- **Độ dày**: 0.9 pixels
-- **Nhãn**: Xoay 90° theo đường thẳng
-
-## 📈 Dữ liệu Đầu Vào
-
-### 1. Chu Kỳ Kinh Tế (`du_lieu_chu_ky_kinh_te.csv`)
-
-Dữ liệu mô phỏng các chu kỳ kinh tế từ 2020-2035 với giá trị chuẩn hóa:
-
-| Năm | Chu_Ky_Tin_Dung | Chu_Ky_Bat_Dong_San | Chu_Ky_Chung_Khoan | Chu_Ky_Chien_Tranh | Chu_Ky_Nang_Luong | Chu_Ky_Thien_Tai |
-|-----|------------------|---------------------|---------------------|---------------------|-------------------|------------------|
-| 2020 | -0.85 | 0.45 | -0.92 | -0.15 | 0.35 | -0.75 |
-| 2021 | -0.42 | 0.78 | -0.31 | 0.25 | 0.67 | -0.12 |
-| 2022 | 0.23 | 0.89 | 0.45 | 0.78 | 0.95 | 0.34 |
-| 2023 | 0.71 | 0.34 | 0.87 | 0.12 | 0.23 | 0.89 |
-| 2024 | 0.95 | -0.12 | 0.65 | -0.45 | -0.34 | 0.45 |
-
-**📊 Giải thích các giá trị:**
-- **Phạm vi**: -1.0 đến +1.0 (chuẩn hóa)
-- **Giá trị âm**: Giai đoạn suy giảm/khủng hoảng
-- **Giá trị dương**: Giai đoạn tăng trưởng/phục hồi
-- **Giá trị gần 0**: Giai đoạn ổn định
-
-### 2. Dữ Liệu Suy Thoái (NBER, Mỹ)
-
-**Các giai đoạn suy thoái được mã hóa trong `generate_graph.py`:**
+### 1. Suy Thoái (NBER, Mỹ) - 15 giai đoạn
 
 | Thời Gian | Tên Suy Thoái |
 |-----------|---------------|
@@ -128,120 +81,119 @@ Dữ liệu mô phỏng các chu kỳ kinh tế từ 2020-2035 với giá trị 
 | 2007-12 → 2009-06 | Khủng hoảng 2007–09 |
 | 2020-02 → 2020-04 | COVID-19 2020 |
 
-### 3. Dữ Liệu Khủng Hoảng Lớn
-
-**Các giai đoạn khủng hoảng nghiêm trọng:**
+### 2. Khủng Hoảng Lớn - 10 giai đoạn
 
 | Thời Gian | Tên Khủng Hoảng |
 |-----------|-----------------|
 | 1929-10 → 1933-03 | Đại Khủng hoảng 1929–33 |
 | 1973-10 → 1975-03 | Khủng hoảng dầu mỏ 1973–75 |
-| 1979-01 → 1982-12 | Sốc dầu lần 2 & thắt chặt 1979–82 |
-| 1982-08 → 1983-12 | Khủng hoảng nợ Mỹ Latinh 1982–83 |
-| 1997-07 → 1998-12 | Khủng hoảng châu Á 1997–98 |
-| 2000-03 → 2002-12 | Vỡ bong bóng dot-com 2000–02 |
 | 2007-08 → 2009-06 | Khủng hoảng tài chính toàn cầu 2007–09 |
-| 2010-01 → 2012-12 | Khủng hoảng nợ Eurozone 2010–12 |
 | 2020-02 → 2020-12 | Sốc COVID-19 2020 |
 | 2022-01 → 2023-12 | Lạm phát toàn cầu & siết tiền tệ 2022–23 |
+| ... | ... |
 
-### 4. Sự Kiện Toàn Cầu (`SuKien_ChienTranh_ThienTai_ToanCau.csv`)
+### 3. Sự Kiện Chính Trị/Chiến Tranh - 16 sự kiện
 
-Dữ liệu 23 sự kiện lớn từ 1939-2022 bao gồm:
+| Thời Gian | Tên Sự Kiện |
+|-----------|-------------|
+| 1939-09 → 1945-09 | WWII 1939–45 |
+| 1950-06 → 1953-07 | Korean War 1950–53 |
+| 2003-03 → 2011-12 | Iraq War 2003–11 |
+| 2018-07 → 2025-12 | US–China tariffs (Sec. 301) 2018– |
+| 2022-02 → 2024-12 | Russia–Ukraine 2022– |
+| 2023-01 → 2025-12 | AI & Data Center boom 2023– |
+| ... | ... |
 
-**🌍 Sự kiện Chiến tranh/Chính trị:**
-- WWII 1939–45, Korean War 1950–53, Vietnam War
-- Oil embargo 1973–74, Nixon Shock 1971–73
-- Gulf War 1990–91, 9/11 (2001), Iraq War 2003–11
-- Arab Spring 2011–12, Russia–Ukraine 2022–
+### 4. Thiên Tai/Đại Dịch - 10 sự kiện
 
-**🌪️ Sự kiện Thiên tai/Đại dịch:**
-- Asian Flu 1957–58, Hong Kong Flu 1968–70
-- SARS 2003, Tsunami 2004, Iceland ash 2010
-- Tohoku 2011, Thailand floods 2011
-- Ebola 2014–16, COVID-19 2020–
+| Thời Gian | Tên Sự Kiện |
+|-----------|-------------|
+| 1957-02 → 1958-12 | Flu 1957–58 |
+| 2002-11 → 2003-07 | SARS 2003 |
+| 2004-12-26 | Tsunami 2004 |
+| 2011-03-11 | Tohoku 2011 |
+| 2020-03 → 2023-12 | COVID-19 2020– |
+| 2022-06 → 2022-10 | Pakistan floods 2022 |
+| ... | ... |
 
 ## 📈 Kết Quả Đầu Ra
 
 ### Biểu Đồ Được Tạo Ra
 
-1. **`BieuDo_1_ChuKyChinh.svg`** - Chu kỳ chính + Đoạn ngang suy thoái (xanh) + Đoạn ngang khủng hoảng (đỏ)
-2. **`BieuDo_2_ChuKyPhu.svg`** - Chu kỳ phụ + Đường thẳng đứng sự kiện chiến tranh/thiên tai
+![Biểu đồ Tổng Hợp](docs/FullScale.png)
+
+Biểu đồ tổng hợp với:
+- Chu kỳ chính và phụ với phân chia vùng rõ ràng
+- Đoạn ngang so le 3 tầng cho các loại sự kiện
+- Đường kết nối đỏ cho khủng hoảng
+- Độ dài thực tế của các sự kiện đa năm
 
 ### Đặc Điểm Biểu Đồ
 
 - **📏 Định dạng**: SVG (Vector graphics) có thể phóng to vô hạn
-- **🎨 Màu sắc**: Phân biệt rõ ràng từng loại sự kiện
-- **📊 Thang đo**: Y-axis từ -1.1 đến 1.4 để hiển thị đầy đủ
-- **📅 Thời gian**: X-axis từ 1925 đến 2035
-- **🏷️ Nhãn**: Tự động gắn nhãn cho mỗi sự kiện
+- **🎨 Màu sắc**: 6 loại màu phân biệt rõ ràng
+- **📊 Kích thước**: 16x8 inches (tối ưu cho màn hình rộng)
+- **📅 Thời gian**: 1925-2035 với lưới 5 năm (chính) và 1 năm (phụ)
+- **🏷️ Nhãn**: Tự động phân bố so le tránh chồng lấp
+
+![Giai đoạn 1995-2015](docs/1995-2015.png)
+![Giai đoạn 2010-2030](docs/2010-2030.png)
 
 ## 🔬 Phương Pháp Luận
 
 ### Mô Hình Toán Học
 
-Công cụ sử dụng mô hình sóng sin để mô phỏng các chu kỳ:
-
+#### Chu Kỳ Chính (0.5-1.0)
 ```python
-# Công thức cơ bản cho mỗi chu kỳ
-series = sin(2π × (t / period) + phase)
+s = sin(2π × (t / period) + phase)
+s_scaled = 0.5 + 0.5 × (s + 1) / 2  # Scale to 0.5-1.0
+```
 
-# Tổng hợp các chu kỳ
+#### Chu Kỳ Phụ (0.0-0.5)
+```python
+s = sin(2π × (t / period) + phase)
+s_scaled = 0.0 + 0.5 × (s + 1) / 2  # Scale to 0.0-0.5
+```
+
+#### Chỉ Số Hợp Lực
+```python
 composite = Σ(weight × series)
-
-# Chuẩn hóa kết quả
-normalized = composite / max(|composite|)
-```
-
-**Trong đó:**
-- `t`: Thời gian (năm)
-- `period`: Chu kỳ của từng yếu tố (năm)
-- `phase`: Độ lệch pha (radians)
-- `weight`: Trọng số ảnh hưởng (0-1)
-
-### Thuật Toán Phát Hiện Đỉnh
-
-```python
-# Điều kiện phát hiện đỉnh khủng hoảng
-if (composite[i-1] < composite[i] > composite[i+1]) and \
-   (composite[i] >= threshold_85_percentile):
-    peak_detected = True
-```
-
-### Xử Lý Khoảng Thời Gian
-
-```python
-# Đảm bảo độ dài tối thiểu 1 năm
-if (end_date - start_date).days < 365:
-    end_date = start_date + DateOffset(years=1)
+composite_normalized = composite / max(|composite|)
 ```
 
 ## 🎯 Ứng Dụng Thực Tế
 
 ### 📊 Phân Tích Tài Chính
-- **Đánh giá rủi ro**: Xác suất khủng hoảng trong tương lai
-- **Timing đầu tư**: Xác định thời điểm tối ưu cho quyết định đầu tư
-- **Quản lý danh mục**: Điều chỉnh tài sản theo chu kỳ
+- **Timing Analysis**: Xác định thời điểm chu kỳ khi khủng hoảng xảy ra
+- **Risk Assessment**: Đánh giá rủi ro dựa trên vị trí chu kỳ hiện tại
+- **Portfolio Management**: Điều chỉnh tài sản theo giai đoạn chu kỳ
 
 ### 🏛️ Hoạch Định Chính Sách
-- **Chính sách vĩ mô**: Hỗ trợ ngân hàng trung ương
-- **Dự báo**: Chuẩn bị cho các kịch bản khủng hoảng
-- **Phản ứng**: Thiết kế biện pháp ứng phó kịp thời
+- **Macro Policy**: Hỗ trợ ngân hàng trung ương trong quyết định lãi suất
+- **Fiscal Planning**: Chuẩn bị ngân sách cho giai đoạn khủng hoảng
+- **Crisis Management**: Thiết kế kịch bản ứng phó
 
 ### 🎓 Giáo Dục và Nghiên Cứu
-- **Giảng dạy**: Minh họa chu kỳ kinh tế cho sinh viên
-- **Nghiên cứu**: Phân tích mối quan hệ giữa các yếu tố
-- **Xuất bản**: Tạo biểu đồ cho báo cáo và bài viết
+- **Teaching Tool**: Minh họa trực quan các khái niệm chu kỳ kinh tế
+- **Research Platform**: Phân tích mối quan hệ giữa các yếu tố
+- **Publication**: Tạo biểu đồ chất lượng cao cho báo cáo
+
 
 ## ⚠️ Lưu Ý Quan Trọng
 
 > **🚨 Disclaimer**: Đây là công cụ mô phỏng dựa trên dữ liệu lịch sử và mô hình toán học. Kết quả chỉ mang tính chất tham khảo và **KHÔNG NÊN** được sử dụng làm cơ sở duy nhất cho các quyết định đầu tư hoặc chính sách quan trọng.
 
 ### Giới Hạn của Mô Hình
+- **Đơn giản hóa**: Thực tế phức tạp hơn mô hình sin đơn thuần
 - **Dữ liệu lịch sử**: Quá khứ không đảm bảo tương lai
-- **Mô hình đơn giản**: Thực tế phức tạp hơn nhiều
-- **Yếu tố ngẫu nhiên**: Không thể dự đoán sự kiện bất ngờ
+- **Yếu tố ngẫu nhiên**: Không thể dự đoán black swan events
 - **Bối cảnh thay đổi**: Kinh tế toàn cầu liên tục biến đổi
+
+### Sử Dụng Hiệu Quả
+- **Kết hợp** với các công cụ phân tích khác
+- **Cập nhật** dữ liệu thường xuyên
+- **Hiểu rõ** giới hạn của mô hình
+- **Áp dụng** judgment và kinh nghiệm thực tế
 
 ## 📄 Giấy Phép
 
