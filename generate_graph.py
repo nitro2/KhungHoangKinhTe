@@ -65,9 +65,22 @@ recession_periods = [
     ("2020-02-01", "2020-04-01", "COVID-19 2020"),
 ]
 
-# Build sets for vertical lines and labels (first year of each period)
+crisis_periods = [
+    ("1929-10-24", "1933-03-01", "Đại Khủng hoảng 1929–33"),
+    ("1973-10-01", "1975-03-01", "Khủng hoảng dầu mỏ 1973–75"),
+    ("1979-01-01", "1982-12-01", "Sốc dầu lần 2 & thắt chặt 1979–82"),
+    ("1982-08-01", "1983-12-01", "Khủng hoảng nợ Mỹ Latinh 1982–83"),
+    ("1997-07-01", "1998-12-01", "Khủng hoảng châu Á 1997–98"),
+    ("2000-03-01", "2002-12-01", "Vỡ bong bóng dot-com 2000–02"),
+    ("2007-08-01", "2009-06-01", "Khủng hoảng tài chính toàn cầu 2007–09"),
+    ("2010-01-01", "2012-12-01", "Khủng hoảng nợ Eurozone 2010–12"),
+    ("2020-02-01", "2020-12-31", "Sốc COVID-19 2020"),
+    ("2022-01-01", "2023-12-31", "Lạm phát toàn cầu & siết tiền tệ 2022–23"),
+]
+
+# Build sets for vertical lines and labels (first year of each period) for recessions (blue)
 recession_years = set()
-first_year_to_label = {}
+recession_year_to_label = {}
 for start_str, end_str, label in recession_periods:
     s = pd.to_datetime(start_str)
     e = pd.to_datetime(end_str)
@@ -76,8 +89,22 @@ for start_str, end_str, label in recession_periods:
     for y in years:
         recession_years.add(y)
     if years:
-        first_year_to_label[years[0]] = label
+        recession_year_to_label[years[0]] = label
 recession_years = sorted(recession_years)
+
+# Build sets for vertical lines and labels (first year of each period) for crises (red)
+crisis_years = set()
+crisis_year_to_label = {}
+for start_str, end_str, label in crisis_periods:
+    s = pd.to_datetime(start_str)
+    e = pd.to_datetime(end_str)
+    months = pd.date_range(start=s, end=e, freq="MS")
+    years = sorted(set(m.year for m in months))
+    for y in years:
+        crisis_years.add(y)
+    if years:
+        crisis_year_to_label[years[0]] = label
+crisis_years = sorted(crisis_years)
 
 # ---------- Chart 1: Main cycles + composite + recession lines ----------
 plt.figure(figsize=(13, 6))
@@ -89,27 +116,55 @@ for col, series in main_series.items():
 # Composite of main cycles
 plt.plot(dates, main_composite, linestyle="--", linewidth=2, label="Chỉ số hợp lực (chu kỳ chính, normalized)")
 
-# Vertical lines for recession years
-label_added = False
-for y in recession_years:
-    ts = pd.Timestamp(f"{y}-01-01")
-    if not label_added:
-        plt.axvline(ts, linestyle="-", linewidth=0.9, label="Năm có suy thoái (NBER, Mỹ)")
-        label_added = True
+# Horizontal lines for recession periods at y=1.2 (blue)
+label_added_recession = False
+for start_str, end_str, label in recession_periods:
+    start_date = pd.to_datetime(start_str)
+    end_date = pd.to_datetime(end_str)
+    
+    # Ensure minimum 1 year duration
+    if (end_date - start_date).days < 365:
+        end_date = start_date + pd.DateOffset(years=1)
+    
+    if not label_added_recession:
+        plt.plot([start_date, end_date], [1.2, 1.2], color='blue', linewidth=4, 
+                label="Suy thoái (NBER, Mỹ)")
+        label_added_recession = True
     else:
-        plt.axvline(ts, linestyle="-", linewidth=0.9)
+        plt.plot([start_date, end_date], [1.2, 1.2], color='blue', linewidth=4)
+    
+    # Add label at the middle of the line
+    mid_date = start_date + (end_date - start_date) / 2
+    plt.annotate(label, xy=(mid_date, 1.25), ha='center', va='bottom', 
+                fontsize=7, color='blue', rotation=0)
 
-# Labels at first year of each recession period
-for y, text in first_year_to_label.items():
-    ts = pd.Timestamp(f"{y}-01-01")
-    plt.annotate(text, xy=(ts, 1.02), xycoords=('data', 'axes fraction'),
-                 xytext=(3, 2), textcoords='offset points', rotation=90,
-                 va='bottom', ha='left', fontsize=8)
+# Horizontal lines for crisis periods at y=1.1 (red)
+label_added_crisis = False
+for start_str, end_str, label in crisis_periods:
+    start_date = pd.to_datetime(start_str)
+    end_date = pd.to_datetime(end_str)
+    
+    # Ensure minimum 1 year duration
+    if (end_date - start_date).days < 365:
+        end_date = start_date + pd.DateOffset(years=1)
+    
+    if not label_added_crisis:
+        plt.plot([start_date, end_date], [1.1, 1.1], color='red', linewidth=4, 
+                label="Khủng hoảng (chọn lọc)")
+        label_added_crisis = True
+    else:
+        plt.plot([start_date, end_date], [1.1, 1.1], color='red', linewidth=4)
+    
+    # Add label at the middle of the line
+    mid_date = start_date + (end_date - start_date) / 2
+    plt.annotate(label, xy=(mid_date, 1.15), ha='center', va='bottom', 
+                fontsize=7, color='red', rotation=0)
 
 # Axis cosmetics
 ax = plt.gca()
 ax.xaxis.set_major_locator(YearLocator(base=10))
 ax.xaxis.set_major_formatter(DateFormatter('%Y'))
+plt.ylim(-1.1, 1.4)  # Extend y-axis to show horizontal lines
 plt.title("Biểu đồ 1 — Chu kỳ CHÍNH & Chỉ số hợp lực (chỉ từ chu kỳ chính)")
 plt.xlabel("Năm")
 plt.ylabel("Biên độ chuẩn hóa")
@@ -140,10 +195,30 @@ for col, series in secondary_series.items():
 # Optional: show composite of secondary cycles (dashed) for reference
 plt.plot(dates, secondary_composite, linestyle="--", linewidth=2, label="Hợp lực (chu kỳ phụ, normalized)")
 
-# Vertical lines for World War II and COVID-19
+# Vertical lines for major war/political events and disasters from CSV
 events = [
-    (pd.Timestamp("1939-01-01"), "Thế chiến II 1939–45"),
-    (pd.Timestamp("2020-01-01"), "COVID-19 2020"),
+    (pd.Timestamp("1939-01-01"), "WWII 1939–45"),
+    (pd.Timestamp("1950-01-01"), "Korean War 1950–53"),
+    (pd.Timestamp("1956-01-01"), "Suez Crisis 1956"),
+    (pd.Timestamp("1967-01-01"), "Canal closed 1967–75"),
+    (pd.Timestamp("1973-01-01"), "Oil embargo 1973–74"),
+    (pd.Timestamp("1971-01-01"), "Nixon Shock 1971–73"),
+    (pd.Timestamp("1978-01-01"), "Oil shock 1979–80"),
+    (pd.Timestamp("1980-01-01"), "Iran–Iraq War 1980–88"),
+    (pd.Timestamp("1990-01-01"), "Gulf War 1990–91"),
+    (pd.Timestamp("2001-01-01"), "9/11 (2001)"),
+    (pd.Timestamp("2003-01-01"), "Iraq War 2003–11"),
+    (pd.Timestamp("2011-01-01"), "Arab Spring 2011–12"),
+    (pd.Timestamp("2022-01-01"), "Russia–Ukraine 2022–"),
+    (pd.Timestamp("1957-01-01"), "Flu 1957–58"),
+    (pd.Timestamp("1968-01-01"), "Flu 1968–70"),
+    (pd.Timestamp("2002-01-01"), "SARS 2003"),
+    (pd.Timestamp("2004-01-01"), "Tsunami 2004"),
+    (pd.Timestamp("2010-01-01"), "Iceland ash 2010"),
+    (pd.Timestamp("2011-01-01"), "Tohoku 2011"),
+    (pd.Timestamp("2011-01-01"), "Thailand floods 2011"),
+    (pd.Timestamp("2014-01-01"), "Ebola 2014–16"),
+    (pd.Timestamp("2020-01-01"), "COVID-19 2020–"),
 ]
 label_added = False
 for ts, label in events:

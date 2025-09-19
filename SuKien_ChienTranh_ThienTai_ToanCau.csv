@@ -1,0 +1,23 @@
+category,name,start_date,end_date,label,note
+War/Political,World War II,1939-09-01,1945-09-02,WWII 1939–45,Global conflict; production & trade reoriented
+War/Political,Korean War,1950-06-25,1953-07-27,Korean War 1950–53,Defense spending; commodity demand
+War/Political,Suez Crisis,1956-07-26,1957-03-07,Suez Crisis 1956,Canal disruption; shipping reroutes
+War/Political,Six-Day War & Suez closure,1967-06-05,1975-06-05,Canal closed 1967–75,Long detours; higher shipping costs
+War/Political,Yom Kippur War & OAPEC embargo,1973-10-06,1974-03-18,Oil embargo 1973–74,First oil shock; inflation surge
+War/Political,Nixon Shock (end of Bretton Woods),1971-08-15,1973-03-01,Nixon Shock 1971–73,USD convertibility ended; FX regime shift
+War/Political,Iranian Revolution & 2nd Oil Shock,1978-01-01,1980-12-31,Oil shock 1979–80,Supply disruption; stagflation pressure
+War/Political,Iran–Iraq War (Tanker War),1980-09-22,1988-08-20,Iran–Iraq War 1980–88,Gulf shipping risk; oil volatility
+War/Political,Gulf War (Iraq–Kuwait),1990-08-02,1991-04-11,Gulf War 1990–91,Oil supply fears; brief conflict
+War/Political,9/11 Terror Attacks,2001-09-11,2001-09-11,9/11 (2001),Global financial shock; liquidity measures
+War/Political,Iraq War,2003-03-20,2011-12-18,Iraq War 2003–11,Risk premium in oil; fiscal cost
+War/Political,Arab Spring & Libya conflict,2011-02-01,2012-12-31,Arab Spring 2011–12,Oil supply interruptions; risk premia
+War/Political,Russia–Ukraine War (full-scale),2022-02-24,,Russia–Ukraine 2022–,Energy/food/fertilizer shocks
+Disaster/Pandemic,Asian Flu (H2N2),1957-02-01,1958-12-31,Flu 1957–58,Global influenza pandemic
+Disaster/Pandemic,Hong Kong Flu (H3N2),1968-07-01,1970-12-31,Flu 1968–70,Global influenza pandemic
+Disaster/Pandemic,SARS (SARS-CoV-1),2002-11-01,2003-07-31,SARS 2003,Travel/services hit across East Asia
+Disaster/Pandemic,Indian Ocean Earthquake & Tsunami,2004-12-26,2004-12-26,Tsunami 2004,Trans-oceanic tsunami; logistics impact
+Disaster/Pandemic,Eyjafjallajökull eruption,2010-04-15,2010-04-21,Iceland ash 2010,Europe airspace closure; flights canceled
+Disaster/Pandemic,Great East Japan Earthquake & Tsunami,2011-03-11,2011-03-11,Tohoku 2011,Supply-chain disruption; large losses
+Disaster/Pandemic,Thailand Floods,2011-07-01,2011-12-31,Thailand floods 2011,Electronics/auto supply shortages
+Disaster/Pandemic,West Africa Ebola outbreak,2014-03-01,2016-06-09,Ebola 2014–16,Regional GDP hit; global spillovers
+Disaster/Pandemic,COVID-19 pandemic,2020-03-11,,COVID-19 2020–,WHO pandemic declaration; global shock
