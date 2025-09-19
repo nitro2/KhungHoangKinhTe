@@ -11,6 +11,23 @@ import matplotlib.pyplot as plt
 import os
 from matplotlib.dates import YearLocator, DateFormatter
 
+# ---------- Constants ----------
+# Y-axis positions for horizontal lines
+CRISIS_Y_POSITION = 1.1      # Red horizontal lines for crises
+RECESSION_Y_POSITION = 1.2   # Blue horizontal lines for recessions
+EVENTS_Y_POSITION = -0.1     # Purple horizontal lines for war/disaster events
+
+# Sine wave amplitude and positioning
+MAIN_CYCLES_MIN = 0.5        # Main cycles range: 0.5 to 1.0
+MAIN_CYCLES_MAX = 1.0
+SECONDARY_CYCLES_MIN = 0.0   # Secondary cycles range: 0.0 to 0.5
+SECONDARY_CYCLES_MAX = 0.5
+SINE_AMPLITUDE = 0.25        # Half-amplitude for scaling (0.5 range = 0.25 amplitude)
+
+# Y-axis limits for combined chart
+Y_AXIS_MIN = -0.3           # Minimum y-axis value to show events
+Y_AXIS_MAX = 1.4            # Maximum y-axis value
+
 # ---------- Timeline ----------
 dates = pd.date_range(start="1925-01-01", end="2035-12-31", freq="MS")
 t_years = (dates - dates[0]).days / 365.25
@@ -32,19 +49,38 @@ secondary_cycles = [
 ]
 
 # ---------- Build series ----------
-def build_cycle_series(cycles):
+def build_main_cycle_series(cycles):
+    """Build main cycles with range 0.5 to 1.0"""
     series_dict = {}
     composite = np.zeros_like(t_years, dtype=float)
     for name, period, phase, weight in cycles:
         s = np.sin(2*np.pi * (t_years / period) + phase)
-        series_dict[f"{name} (T≈{period}y)"] = s
+        # Scale to range 0.5 to 1.0
+        s_scaled = MAIN_CYCLES_MIN + (MAIN_CYCLES_MAX - MAIN_CYCLES_MIN) * (s + 1) / 2
+        series_dict[f"{name} (T≈{period}y)"] = s_scaled
         composite += weight * s
-    # Normalize composite
+    # Normalize and scale composite to same range
     composite /= (np.max(np.abs(composite)) + 1e-9)
-    return series_dict, composite
+    composite_scaled = MAIN_CYCLES_MIN + (MAIN_CYCLES_MAX - MAIN_CYCLES_MIN) * (composite + 1) / 2
+    return series_dict, composite_scaled
 
-main_series, main_composite = build_cycle_series(main_cycles)
-secondary_series, secondary_composite = build_cycle_series(secondary_cycles)
+def build_secondary_cycle_series(cycles):
+    """Build secondary cycles with range 0.0 to 0.5"""
+    series_dict = {}
+    composite = np.zeros_like(t_years, dtype=float)
+    for name, period, phase, weight in cycles:
+        s = np.sin(2*np.pi * (t_years / period) + phase)
+        # Scale to range 0.0 to 0.5
+        s_scaled = SECONDARY_CYCLES_MIN + (SECONDARY_CYCLES_MAX - SECONDARY_CYCLES_MIN) * (s + 1) / 2
+        series_dict[f"{name} (T≈{period}y)"] = s_scaled
+        composite += weight * s
+    # Normalize and scale composite to same range
+    composite /= (np.max(np.abs(composite)) + 1e-9)
+    composite_scaled = SECONDARY_CYCLES_MIN + (SECONDARY_CYCLES_MAX - SECONDARY_CYCLES_MIN) * (composite + 1) / 2
+    return series_dict, composite_scaled
+
+main_series, main_composite = build_main_cycle_series(main_cycles)
+secondary_series, secondary_composite = build_secondary_cycle_series(secondary_cycles)
 
 # ---------- Recessions (NBER, US) ----------
 recession_periods = [
@@ -106,7 +142,7 @@ for start_str, end_str, label in crisis_periods:
         crisis_year_to_label[years[0]] = label
 crisis_years = sorted(crisis_years)
 
-# ---------- Chart 1: Main cycles + composite + recession lines ----------
+# ---------- Combined Chart: All cycles + events ----------
 plt.figure(figsize=(13, 6))
 
 # Plot main cycles
@@ -127,15 +163,15 @@ for start_str, end_str, label in recession_periods:
         end_date = start_date + pd.DateOffset(years=1)
     
     if not label_added_recession:
-        plt.plot([start_date, end_date], [1.2, 1.2], color='blue', linewidth=4, 
+        plt.plot([start_date, end_date], [RECESSION_Y_POSITION, RECESSION_Y_POSITION], color='blue', linewidth=4, 
                 label="Suy thoái (NBER, Mỹ)")
         label_added_recession = True
     else:
-        plt.plot([start_date, end_date], [1.2, 1.2], color='blue', linewidth=4)
+        plt.plot([start_date, end_date], [RECESSION_Y_POSITION, RECESSION_Y_POSITION], color='blue', linewidth=4)
     
     # Add label at the middle of the line
     mid_date = start_date + (end_date - start_date) / 2
-    plt.annotate(label, xy=(mid_date, 1.25), ha='center', va='bottom', 
+    plt.annotate(label, xy=(mid_date, RECESSION_Y_POSITION + 0.05), ha='center', va='bottom', 
                 fontsize=7, color='blue', rotation=0)
 
 # Horizontal lines for crisis periods at y=1.1 (red)
@@ -149,22 +185,22 @@ for start_str, end_str, label in crisis_periods:
         end_date = start_date + pd.DateOffset(years=1)
     
     if not label_added_crisis:
-        plt.plot([start_date, end_date], [1.1, 1.1], color='red', linewidth=4, 
+        plt.plot([start_date, end_date], [CRISIS_Y_POSITION, CRISIS_Y_POSITION], color='red', linewidth=4, 
                 label="Khủng hoảng (chọn lọc)")
         label_added_crisis = True
     else:
-        plt.plot([start_date, end_date], [1.1, 1.1], color='red', linewidth=4)
+        plt.plot([start_date, end_date], [CRISIS_Y_POSITION, CRISIS_Y_POSITION], color='red', linewidth=4)
     
     # Add label at the middle of the line
     mid_date = start_date + (end_date - start_date) / 2
-    plt.annotate(label, xy=(mid_date, 1.15), ha='center', va='bottom', 
+    plt.annotate(label, xy=(mid_date, CRISIS_Y_POSITION + 0.05), ha='center', va='bottom', 
                 fontsize=7, color='red', rotation=0)
 
 # Axis cosmetics
 ax = plt.gca()
 ax.xaxis.set_major_locator(YearLocator(base=10))
 ax.xaxis.set_major_formatter(DateFormatter('%Y'))
-plt.ylim(-1.1, 1.4)  # Extend y-axis to show horizontal lines
+plt.ylim(Y_AXIS_MIN, Y_AXIS_MAX)  # Set y-axis limits using constants
 plt.title("Biểu đồ 1 — Chu kỳ CHÍNH & Chỉ số hợp lực (chỉ từ chu kỳ chính)")
 plt.xlabel("Năm")
 plt.ylabel("Biên độ chuẩn hóa")
