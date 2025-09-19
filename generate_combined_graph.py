@@ -8,10 +8,11 @@ import os
 from matplotlib.dates import YearLocator, DateFormatter
 
 # ---------- Constants ----------
-# Y-axis positions for horizontal lines (alternating/zigzag)
-CRISIS_Y_POSITIONS = [1.1, 1.2]      # Red horizontal lines for crises (alternating)
-RECESSION_Y_POSITIONS = [1.3, 1.4]   # Blue horizontal lines for recessions (alternating)
-EVENTS_Y_POSITIONS = [-0.1, -0.2]    # Purple horizontal lines for war/disaster events (alternating)
+# Y-axis positions for horizontal lines (3-level zigzag)
+CRISIS_Y_POSITIONS = [1.0, 1.1, 1.2]      # Red horizontal lines for crises (3 levels)
+RECESSION_Y_POSITIONS = [1.3, 1.4, 1.5]   # Blue horizontal lines for recessions (3 levels)
+POLITICAL_Y_POSITIONS = [-0.1, -0.2, -0.3]   # Purple horizontal lines for political/war events (3 levels)
+DISASTER_Y_POSITIONS = [-0.4, -0.5, -0.6]    # Orange/Yellow horizontal lines for disasters (3 levels)
 
 # Sine wave amplitude and positioning
 MAIN_CYCLES_MIN = 0.5        # Main cycles range: 0.5 to 1.0
@@ -20,8 +21,8 @@ SECONDARY_CYCLES_MIN = 0.0   # Secondary cycles range: 0.0 to 0.5
 SECONDARY_CYCLES_MAX = 0.5
 
 # Y-axis limits for combined chart
-Y_AXIS_MIN = -0.3           # Minimum y-axis value to show events
-Y_AXIS_MAX = 1.5            # Maximum y-axis value (increased for recession at 1.4)
+Y_AXIS_MIN = -0.7           # Minimum y-axis value to show disaster events (down to -0.6)
+Y_AXIS_MAX = 1.6            # Maximum y-axis value (increased for recession at 1.5)
 
 # ---------- Timeline ----------
 dates = pd.date_range(start="1925-01-01", end="2035-12-31", freq="MS")
@@ -109,21 +110,29 @@ crisis_periods = [
     ("2022-01-01", "2023-12-31", "Lạm phát toàn cầu & siết tiền tệ 2022–23"),
 ]
 
-# Events from CSV
-events = [
+# Political/War Events (Purple)
+political_events = [
     ("1939-09-01", "1945-09-02", "WWII 1939–45"),
     ("1950-06-25", "1953-07-27", "Korean War 1950–53"),
     ("1956-07-26", "1957-03-07", "Suez Crisis 1956"),
     ("1967-06-05", "1975-06-05", "Canal closed 1967–75"),
-    ("1973-10-06", "1974-03-18", "Oil embargo 1973–74"),
     ("1971-08-15", "1973-03-01", "Nixon Shock 1971–73"),
+    ("1973-10-06", "1974-03-18", "Oil embargo 1973–74"),
     ("1978-01-01", "1980-12-31", "Oil shock 1979–80"),
     ("1980-09-22", "1988-08-20", "Iran–Iraq War 1980–88"),
     ("1990-08-02", "1991-04-11", "Gulf War 1990–91"),
     ("2001-09-11", "2001-09-11", "9/11 (2001)"),
-    ("2003-03-20", "2011-12-18", "Iraq War 2003–11"),
+    ("2003-03-20", "2011-12-18", "Iraq War 2003–11"), 
     ("2011-02-01", "2012-12-31", "Arab Spring 2011–12"),
+    ("2018-07-06", "2025-12-31", "US–China tariffs (Sec. 301) 2018–"),
     ("2022-02-24", "2024-12-31", "Russia–Ukraine 2022–"),
+    ("2023-01-01", "2025-12-31", "AI & Data Center boom 2023–"),
+    ("2023-10-07", "2025-12-31", "Israel–Hamas 2023–"),
+    ("2024-05-14", "2025-12-31", "US tariffs 2024 (EVs, batteries, solar)"),
+]
+
+# Natural Disaster/Pandemic Events (Orange/Yellow)
+disaster_events = [
     ("1957-02-01", "1958-12-31", "Flu 1957–58"),
     ("1968-07-01", "1970-12-31", "Flu 1968–70"),
     ("2002-11-01", "2003-07-31", "SARS 2003"),
@@ -133,6 +142,7 @@ events = [
     ("2011-07-01", "2011-12-31", "Thailand floods 2011"),
     ("2014-03-01", "2016-06-09", "Ebola 2014–16"),
     ("2020-03-11", "2023-12-31", "COVID-19 2020–"),
+    ("2022-06-01", "2022-10-31", "Pakistan floods 2022"),
 ]
 
 # ---------- Combined Chart: All cycles + events ----------
@@ -162,8 +172,8 @@ for i, (start_str, end_str, label) in enumerate(recession_periods):
     if (end_date - start_date).days < 365:
         end_date = start_date + pd.DateOffset(years=1)
     
-    # Alternate between the two y positions
-    y_position = RECESSION_Y_POSITIONS[i % 2]
+    # Cycle through the three y positions
+    y_position = RECESSION_Y_POSITIONS[i % 3]
     
     if not label_added_recession:
         plt.plot([start_date, end_date], [y_position, y_position], color='blue', linewidth=4, 
@@ -179,16 +189,29 @@ for i, (start_str, end_str, label) in enumerate(recession_periods):
 
 # Horizontal lines for crisis periods with alternating y positions (red)
 label_added_crisis = False
+label_added_crisis_start = False
 for i, (start_str, end_str, label) in enumerate(crisis_periods):
     start_date = pd.to_datetime(start_str)
     end_date = pd.to_datetime(end_str)
     
+    # Cycle through the three y positions first to get the crisis position
+    y_position = CRISIS_Y_POSITIONS[i % 3]
+    
+    # Add vertical line from y=0 to the actual crisis y position
+    if not label_added_crisis_start:
+        plt.axvline(start_date, ymin=(0-Y_AXIS_MIN)/(Y_AXIS_MAX-Y_AXIS_MIN), 
+                   ymax=(y_position-Y_AXIS_MIN)/(Y_AXIS_MAX-Y_AXIS_MIN), 
+                   color='red', linestyle=':', linewidth=2, alpha=0.7,
+                   label="Bắt đầu khủng hoảng")
+        label_added_crisis_start = True
+    else:
+        plt.axvline(start_date, ymin=(0-Y_AXIS_MIN)/(Y_AXIS_MAX-Y_AXIS_MIN), 
+                   ymax=(y_position-Y_AXIS_MIN)/(Y_AXIS_MAX-Y_AXIS_MIN), 
+                   color='red', linestyle=':', linewidth=2, alpha=0.7)
+    
     # Ensure minimum 1 year duration
     if (end_date - start_date).days < 365:
         end_date = start_date + pd.DateOffset(years=1)
-    
-    # Alternate between the two y positions
-    y_position = CRISIS_Y_POSITIONS[i % 2]
     
     if not label_added_crisis:
         plt.plot([start_date, end_date], [y_position, y_position], color='red', linewidth=4, 
@@ -202,23 +225,24 @@ for i, (start_str, end_str, label) in enumerate(crisis_periods):
     plt.annotate(label, xy=(mid_date, y_position + 0.05), ha='center', va='bottom', 
                 fontsize=7, color='red', rotation=0)
 
-# Horizontal lines for war/disaster events with alternating y positions (purple)
-label_added_events = False
-for i, (start_str, end_str, label) in enumerate(events):
+# Horizontal lines for political/war events with alternating y positions (purple)
+label_added_political = False
+for i, (start_str, end_str, label) in enumerate(political_events):
     start_date = pd.to_datetime(start_str)
     end_date = pd.to_datetime(end_str)
     
-    # Ensure minimum 1 year duration
-    if (end_date - start_date).days < 365:
+    # For single-day events (like 9/11), extend to 1 year for visibility
+    # For multi-year events, ensure maximum 1 year duration
+    if (end_date - start_date).days > 365:
         end_date = start_date + pd.DateOffset(years=1)
     
-    # Alternate between the two y positions
-    y_position = EVENTS_Y_POSITIONS[i % 2]
+    # Cycle through the three y positions
+    y_position = POLITICAL_Y_POSITIONS[i % 3]
     
-    if not label_added_events:
+    if not label_added_political:
         plt.plot([start_date, end_date], [y_position, y_position], color='purple', linewidth=4, 
-                label="Sự kiện (chiến tranh/thiên tai)")
-        label_added_events = True
+                label="Sự kiện chính trị/chiến tranh")
+        label_added_political = True
     else:
         plt.plot([start_date, end_date], [y_position, y_position], color='purple', linewidth=4)
     
@@ -227,15 +251,43 @@ for i, (start_str, end_str, label) in enumerate(events):
     plt.annotate(label, xy=(mid_date, y_position - 0.05), ha='center', va='top', 
                 fontsize=7, color='purple', rotation=0)
 
+# Horizontal lines for disaster/pandemic events with alternating y positions (orange)
+label_added_disaster = False
+for i, (start_str, end_str, label) in enumerate(disaster_events):
+    start_date = pd.to_datetime(start_str)
+    end_date = pd.to_datetime(end_str)
+    
+    # For single-day events (like Tsunami, Tohoku), extend to 1 year for visibility
+    # For multi-year events, ensure maximum 1 year duration
+    if (end_date - start_date).days > 365:
+        end_date = start_date + pd.DateOffset(years=1)
+    
+    # Cycle through the three y positions
+    y_position = DISASTER_Y_POSITIONS[i % 3]
+    
+    if not label_added_disaster:
+        plt.plot([start_date, end_date], [y_position, y_position], color='orange', linewidth=4, 
+                label="Thiên tai/đại dịch")
+        label_added_disaster = True
+    else:
+        plt.plot([start_date, end_date], [y_position, y_position], color='orange', linewidth=4)
+    
+    # Add label at the middle of the line
+    mid_date = start_date + (end_date - start_date) / 2
+    plt.annotate(label, xy=(mid_date, y_position - 0.05), ha='center', va='top', 
+                fontsize=7, color='orange', rotation=0)
+
 # Axis cosmetics
 ax = plt.gca()
-ax.xaxis.set_major_locator(YearLocator(base=10))
+ax.xaxis.set_major_locator(YearLocator(base=5))    # Major ticks every 5 years instead of 10
+ax.xaxis.set_minor_locator(YearLocator(base=1))    # Minor ticks every year
 ax.xaxis.set_major_formatter(DateFormatter('%Y'))
+ax.grid(True, which='major', linewidth=0.3, alpha=0.7)   # Major grid lines
+ax.grid(True, which='minor', linewidth=0.1, alpha=0.3)   # Minor grid lines
 plt.ylim(Y_AXIS_MIN, Y_AXIS_MAX)  # Set y-axis limits using constants
 plt.title("Biểu đồ Tổng Hợp — Chu kỳ Chính (0.5-1.0) & Chu kỳ Phụ (0.0-0.5) & Các Sự kiện")
 plt.xlabel("Năm")
 plt.ylabel("Biên độ chuẩn hóa")
-plt.grid(True, linewidth=0.3)
 plt.legend(ncol=3, fontsize=7, loc='upper left')
 plt.tight_layout()
 
